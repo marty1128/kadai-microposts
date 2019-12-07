@@ -10,8 +10,10 @@ Rails.application.routes.draw do
     member do
       get :followings
       get :followers
+      get :likes #ユーザーごとのお気に入り一覧表示用に追加 課題要件を満たすにはlikesにする。
     end
   end
   resources :microposts, only: [:create, :destroy]
   resources :relationships, only: [:create, :destroy]
+  resources :favorites, only: [:create, :destroy] #お気に入り登録、削除用のルーティング
 end

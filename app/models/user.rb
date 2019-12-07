@@ -11,7 +11,10 @@ class User < ApplicationRecord
  has_many :followings, through: :relationships, source: :follow
  has_many :reverses_of_relationship, class_name: 'Relationship', foreign_key: 'follow_id'
  has_many :followers, through: :reverses_of_relationship, source: :user
+ has_many :favorites
+ has_many :favorite_microposts, through: :favorites, source: :micropost #has_many micropostsが上にあるから追加しなくていいのか？たぶん必要
  
+
  def follow(other_user)
     unless self == other_user
       self.relationships.find_or_create_by(follow_id: other_user.id)
@@ -30,4 +33,18 @@ class User < ApplicationRecord
  def feed_microposts
     Micropost.where(user_id: self.following_ids + [self.id])
  end
+ 
+ def favor(micropost)
+      self.favorites.find_or_create_by(micropost_id: micropost.id) 
+ end
+ 
+ def unfavor(micropost)
+      favorite = self.favorites.find_by(micropost_id: micropost.id)
+      favorite.destroy if favorite
+ end
+ 
+ def favoring?(micropost) #すでにお気に入り登録しているかの処理　引数はmicropostでよい？それともother_micropost?
+    self.favorite_microposts.include?(micropost) 
+ end
+ 
 end
